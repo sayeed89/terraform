@@ -1,7 +1,3 @@
-variable "aws_region" {
-        default = "ap-south-1"
-}
-
 variable "aws_ami" {
         default = "ami-04b1ddd35fd71475a"
 }
