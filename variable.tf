@@ -1,3 +1,10 @@
+variable "aws_access_key" {}
+
+variable "aws_secret_key" {}
+
+variable "aws_region" {}
+
+
 variable "aws_ami" {
         default = "ami-04b1ddd35fd71475a"
 }
