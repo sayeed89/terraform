@@ -1,0 +1,52 @@
+locals {
+        keyname = "syed"
+}
+
+resource "aws_instance" "myec2" {
+        ami = var.aws_ami
+        instance_type = var.aws_instance_type
+        key_name = local.keyname
+        
+	provisioner "remote-exec" {
+		inline = [
+			"sudo yum install httpd -y",
+			"sudo systemctl start httpd"
+		]
+
+	connection {
+		type = "ssh"
+		user = "ec2-user"
+		private_key = file("./syed.pem")
+		host = self.public_ip
+		timeout = "2m"
+	}
+	}
+	tags = {
+                Name = "myec2"
+                count = var.istest != "dev" ? 3 : 0
+                CreationTime = timestamp()
+        }
+	
+	
+}
+
+output "myec2-public_ip" {
+        value = aws_instance.myec2[*].public_ip
+}
+
+
+resource "aws_security_group" "mysg" {
+	name = "myec2-sg"
+	description = "Creating for myec2"
+	vpc_id = "vpc-4ecf3825"
+	
+	dynamic "ingress" {
+	    for_each = var.ingress_ports
+	    content {
+		from_port = ingress.value 
+		to_port = ingress.value
+		protocol = "tcp"
+		cidr_blocks = ["0.0.0.0/0"]
+	    }
+	}
+}
